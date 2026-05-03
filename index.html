@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#0a0a0a"/>
+<title>Kumpulan Doa — Zero Ichiro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --gold:#c9a84c; --gold-l:#e8c97a; --gold-d:#8a6c2a;
+  --bg:#0a0a0a; --bg2:#111; --bg3:#1a1a1a; --bg4:#222;
+  --text:#e8dcc0; --text-d:#9a8a6a;
+  --border:rgba(201,168,76,0.2); --border-b:rgba(201,168,76,0.5);
+  --cream:#f5e9c8;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Lora',Georgia,serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(201,168,76,0.07) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:200;background:rgba(10,10,10,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(16px)}
+.hdr{max-width:700px;margin:0 auto;padding:14px 16px 8px;display:flex;justify-content:space-between;align-items:center}
+.brand-title{font-family:'Cinzel',serif;font-size:17px;font-weight:700;color:var(--gold);letter-spacing:2px}
+.brand-sub{font-size:11px;color:var(--text-d);font-style:italic;letter-spacing:1px;margin-top:2px}
+.hdr-btns{display:flex;gap:7px}
+.icon-btn{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 11px;color:var(--text-d);cursor:pointer;font-size:14px;transition:all .2s;font-family:inherit;display:flex;align-items:center;gap:5px}
+.icon-btn:hover{border-color:var(--gold-d);color:var(--gold-l)}
+.icon-btn.active{background:var(--gold);color:var(--bg);border-color:var(--gold);font-weight:bold}
+
+/* TABS */
+.tabs{max-width:700px;margin:0 auto;padding:8px 16px 10px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--text-d);cursor:pointer;font-size:12px;font-family:'Lora',serif;white-space:nowrap;transition:all .2s;letter-spacing:.4px}
+.tab:hover{border-color:var(--gold-d);color:var(--gold-l)}
+.tab.active{background:linear-gradient(135deg,var(--gold),var(--gold-d));border-color:var(--gold);color:var(--bg);font-weight:600}
+
+/* AI SEARCH SECTION */
+.ai-section{max-width:700px;margin:0 auto;padding:14px 16px 4px;position:relative;z-index:1}
+.ai-label{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ai-badge{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;background:rgba(201,168,76,0.1);border:1px solid var(--gold-d);border-radius:20px;padding:3px 10px}
+.ai-desc{font-size:11px;color:var(--text-d);font-style:italic}
+.ai-box{display:flex;gap:8px;align-items:flex-end}
+.ai-textarea{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'Lora',serif;resize:none;outline:none;min-height:52px;max-height:120px;transition:border-color .2s;line-height:1.5}
+.ai-textarea:focus{border-color:var(--gold-d)}
+.ai-textarea::placeholder{color:var(--text-d)}
+.ai-send{background:linear-gradient(135deg,var(--gold),var(--gold-d));border:none;border-radius:10px;padding:13px 16px;cursor:pointer;color:var(--bg);font-size:18px;transition:all .2s;flex-shrink:0;font-weight:bold}
+.ai-send:hover{transform:scale(1.05);box-shadow:0 4px 16px rgba(201,168,76,0.3)}
+.ai-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* AI RESULT */
+.ai-result{max-width:700px;margin:10px auto 0;padding:0 16px;position:relative;z-index:1}
+.ai-result-card{background:linear-gradient(145deg,#0f0f0f,var(--bg3));border:1px solid var(--border-b);border-radius:14px;overflow:hidden}
+.ai-result-header{padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);background:rgba(201,168,76,0.04)}
+.ai-result-icon{font-size:16px}
+.ai-result-label{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
+.ai-result-body{padding:16px}
+
+/* Loading dots */
+.loading-dots{display:flex;gap:5px;justify-content:center;padding:20px}
+.dot{width:7px;height:7px;background:var(--gold);border-radius:50%;animation:bounce .8s infinite}
+.dot:nth-child(2){animation-delay:.15s}
+.dot:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-8px);opacity:1}}
+
+/* DOA DISPLAY (shared for both local and AI result) */
+.doa-arabic{font-family:'Amiri',serif;font-size:23px;direction:rtl;text-align:right;color:var(--cream);line-height:2.2;padding:14px 16px;background:rgba(201,168,76,0.04);border-radius:10px;border-right:2px solid var(--gold-d);margin-bottom:12px}
+.doa-latin{font-family:'Lora',serif;font-size:13px;font-style:italic;color:var(--gold-l);line-height:1.75;margin-bottom:8px;opacity:.85}
+.sep{height:1px;background:var(--border);margin:8px 0}
+.doa-id{font-family:'Lora',serif;font-size:13.5px;color:var(--text);line-height:1.75;font-style:italic;margin-bottom:12px;opacity:.85}
+.doa-source{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:20px;font-size:11px;font-family:'Cinzel',serif;letter-spacing:.5px}
+.src-quran{background:rgba(201,168,76,0.08);border:1px solid var(--gold-d);color:var(--gold-l)}
+.src-hadis{background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.25);color:var(--text-d)}
+.doa-title-ai{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-l);letter-spacing:.8px;margin-bottom:10px}
+
+/* AI multi-result */
+.ai-multi-item{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.ai-multi-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+
+/* DIVIDER */
+.divider{max-width:700px;margin:14px auto 0;padding:0 16px;position:relative;z-index:1}
+.divider-line{display:flex;align-items:center;gap:10px;opacity:.4}
+.divider-line::before,.divider-line::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent)}
+.divider-text{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;white-space:nowrap}
+
+/* LOCAL SEARCH */
+.local-search{max-width:700px;margin:12px auto 0;padding:0 16px;position:relative;z-index:1}
+.search-wrap{position:relative}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-d);font-size:13px;pointer-events:none}
+.search-input{width:100%;padding:10px 12px 10px 34px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13.5px;font-family:'Lora',serif;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--gold-d)}
+.search-input::placeholder{color:var(--text-d)}
+
+/* CONTENT */
+.content{max-width:700px;margin:12px auto 0;padding:0 16px 50px;position:relative;z-index:1}
+.section-lbl{text-align:center;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold-d);text-transform:uppercase;padding:4px 0 12px}
+
+/* CARD */
+.card{background:linear-gradient(145deg,var(--bg2),var(--bg3));border:1px solid var(--border);border-radius:14px;margin-bottom:9px;overflow:hidden;transition:border-color .2s,box-shadow .2s;animation:fadeUp .35s ease both}
+.card:hover{border-color:var(--border-b);box-shadow:0 4px 20px rgba(201,168,76,0.07)}
+.card-hdr{padding:13px 15px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;user-select:none}
+.card-left{flex:1;min-width:0}
+.card-title{font-family:'Cinzel',serif;font-size:12.5px;font-weight:600;color:var(--gold-l);letter-spacing:.7px;margin-bottom:7px}
+.arabic-prev{font-family:'Amiri',serif;font-size:19px;direction:rtl;text-align:right;color:var(--cream);line-height:1.9;opacity:.9}
+.card-right{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0}
+.bm-btn{background:none;border:none;font-size:16px;cursor:pointer;color:var(--text-d);padding:2px;transition:all .2s;line-height:1}
+.bm-btn.saved{color:var(--gold);text-shadow:0 0 8px rgba(201,168,76,.5)}
+.arrow{color:var(--text-d);font-size:11px;transition:transform .25s;display:block}
+.arrow.open{transform:rotate(180deg)}
+.card-body{padding:0 15px 16px;border-top:1px solid var(--border);display:none}
+.card-body.open{display:block}
+.gold-line{width:36px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);margin:11px auto}
+
+.empty{text-align:center;padding:50px 20px;color:var(--text-d)}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+
+.footer{text-align:center;padding:20px 16px 14px;font-size:10px;font-family:'Cinzel',serif;letter-spacing:2px;color:var(--text-d);text-transform:uppercase;opacity:.4;position:relative;z-index:1}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.fade-in{animation:fadeIn .4s ease both}
+
+/* Error */
+.ai-error{padding:16px;text-align:center;color:#e88;font-size:13px;font-style:italic}
+
+/* Streaming text */
+.streaming::after{content:'▋';color:var(--gold);animation:blink .7s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <div>
+      <div class="brand-title">🤲 Kumpulan Doa</div>
+      <div class="brand-sub">Al-Qur'an & Hadis · Zero Ichiro</div>
+    </div>
+    <div class="hdr-btns">
+      <button class="icon-btn" id="bmToggle" onclick="toggleBmView()">☆ <span id="bmCount">0</span></button>
+      <button class="icon-btn" id="darkBtn" onclick="toggleDark()">☀</button>
+    </div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+</header>
+
+<!-- AI SEARCH -->
+<div class="ai-section">
+  <div class="ai-label">
+    <span class="ai-badge">✦ AI Search</span>
+    <span class="ai-desc">Tanya Claude untuk carikan doa, bacaan, atau shalawat</span>
+  </div>
+  <div class="ai-box">
+    <textarea class="ai-textarea" id="aiInput" placeholder="Contoh: doa ketika gundah gulana, shalawat nariyah, doa sebelum bepergian jauh..." rows="1" oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+    <button class="ai-send" id="aiBtn" onclick="searchAI()" title="Cari dengan AI">🔍</button>
+  </div>
+</div>
+
+<div id="aiResult"></div>
+
+<!-- DIVIDER -->
+<div class="divider">
+  <div class="divider-line"><span class="divider-text">Koleksi Doa</span></div>
+</div>
+
+<!-- LOCAL SEARCH -->
+<div class="local-search">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="localSearch" placeholder="Cari dalam koleksi..." oninput="renderCards()"/>
+  </div>
+</div>
+
+<div class="content" id="content"></div>
+<div class="footer">بَارَكَ اللهُ فِيكُم · Zero Ichiro</div>
+
+<script>
+const duas=[
+  // ========== HARIAN ==========
+  {id:1,cat:"harian",title:"Doa Sebelum Makan",
+   arabic:"بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ",
+   latin:"Bismillāhi wa 'alā barakātillāh.",
+   id_text:"Dengan menyebut nama Allah dan atas berkah Allah.",
+   source:"HR. Abu Dawud no. 3767",type:"hadis"},
+
+  {id:2,cat:"harian",title:"Doa Sesudah Makan",
+   arabic:"الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ",
+   latin:"Alḥamdulillāhil-ladzī ath'amanā wa saqānā wa ja'alanā muslimīn.",
+   id_text:"Segala puji bagi Allah yang telah memberi kami makan, minum, dan menjadikan kami orang-orang Muslim.",
+   source:"HR. Abu Dawud no. 3850",type:"hadis"},
+
+  {id:3,cat:"harian",title:"Doa Sebelum Tidur",
+   arabic:"بِسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+   latin:"Bismika Allāhumma amūtu wa aḥyā.",
+   id_text:"Dengan nama-Mu ya Allah, aku mati dan aku hidup.",
+   source:"HR. Bukhari no. 6324",type:"hadis"},
+
+  {id:4,cat:"harian",title:"Doa Bangun Tidur",
+   arabic:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+   latin:"Alḥamdulillāhil-ladzī aḥyānā ba'da mā amātanā wa ilaihin-nusyūr.",
+   id_text:"Segala puji bagi Allah yang telah menghidupkan kami setelah mematikan kami, dan kepada-Nya lah kami dikembalikan.",
+   source:"HR. Bukhari no. 6312",type:"hadis"},
+
+  {id:5,cat:"harian",title:"Doa Keluar Rumah",
+   arabic:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+   latin:"Bismillāhi, tawakkaltu 'alallāhi, wa lā ḥawla wa lā quwwata illā billāh.",
+   id_text:"Dengan nama Allah, aku bertawakal kepada Allah. Tidak ada daya dan kekuatan melainkan dengan pertolongan Allah.",
+   source:"HR. Abu Dawud no. 5095",type:"hadis"},
+
+  {id:6,cat:"harian",title:"Doa Masuk Rumah",
+   arabic:"اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلِجِ وَخَيْرَ الْمَخْرَجِ، بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا",
+   latin:"Allāhumma innī as'aluka khayral-mawliji wa khayral-makhraj. Bismillāhi walajna, wa bismillāhi kharajnā, wa 'alallāhi rabbinā tawakkalnā.",
+   id_text:"Ya Allah, sesungguhnya aku memohon kepada-Mu kebaikan tempat masuk dan kebaikan tempat keluar. Dengan nama Allah kami masuk, dengan nama Allah kami keluar, dan kepada Allah Tuhan kami, kami bertawakal.",
+   source:"HR. Abu Dawud no. 5096",type:"hadis"},
+
+  {id:7,cat:"harian",title:"Doa Naik Kendaraan",
+   arabic:"بِسْمِ اللَّهِ، الْحَمْدُ لِلَّهِ، سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ. الْحَمْدُ لِلَّهِ، الْحَمْدُ لِلَّهِ، الْحَمْدُ لِلَّهِ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، سُبْحَانَكَ اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ",
+   latin:"Bismillāh, alḥamdulillāh. Subḥānal-ladzī sakhkhara lanā hādzā wa mā kunnā lahū muqrinīn, wa innā ilā rabbinā lamunqalibūn. Alḥamdulillāh, alḥamdulillāh, alḥamdulillāh. Allāhu akbar, Allāhu akbar, Allāhu akbar. Subḥānaka Allāhumma innī ẓalamtu nafsī faghfir lī, fa-innahū lā yaghfirudz-dzunūba illā anta.",
+   id_text:"Dengan nama Allah, segala puji bagi Allah. Mahasuci Allah yang telah menundukkan kendaraan ini bagi kami, padahal kami sebelumnya tidak mampu menguasainya. Dan sesungguhnya kami akan kembali kepada Tuhan kami. Segala puji bagi Allah (3x). Allah Mahabesar (3x). Mahasuci Engkau ya Allah, sesungguhnya aku telah menganiaya diriku sendiri maka ampunilah aku, karena tidak ada yang dapat mengampuni dosa-dosa kecuali Engkau.",
+   source:"HR. Abu Dawud no. 2602 & QS. Az-Zukhruf: 13-14",type:"hadis"},
+
+  {id:8,cat:"harian",title:"Doa Masuk Kamar Mandi",
+   arabic:"بِسْمِ اللَّهِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ",
+   latin:"Bismillāh. Allāhumma innī a'ūdzubika minal-khubutsi wal-khabā'its.",
+   id_text:"Dengan nama Allah. Ya Allah, sesungguhnya aku berlindung kepada-Mu dari setan laki-laki dan setan perempuan.",
+   source:"HR. Bukhari no. 142 & Muslim no. 375",type:"hadis"},
+
+  {id:9,cat:"harian",title:"Doa Keluar Kamar Mandi",
+   arabic:"غُفْرَانَكَ، الْحَمْدُ لِلَّهِ الَّذِي أَذْهَبَ عَنِّي الْأَذَى وَعَافَانِي",
+   latin:"Ghufrānaka. Alḥamdulillāhil-ladzī adzhaba 'annil-adzā wa 'āfānī.",
+   id_text:"Aku memohon ampunan-Mu. Segala puji bagi Allah yang telah menghilangkan penyakitku dan memberiku kesehatan.",
+   source:"HR. Abu Dawud no. 30 & Ibn Majah no. 301",type:"hadis"},
+
+  {id:10,cat:"harian",title:"Doa Bercermin",
+   arabic:"اللَّهُمَّ أَنْتَ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي، وَحَرِّمْ وَجْهِي عَلَى النَّارِ",
+   latin:"Allāhumma anta ḥassanta khalqī fa-ḥassin khuluqī, wa ḥarrim wajhī 'alan-nār.",
+   id_text:"Ya Allah, sebagaimana Engkau telah memperindah rupaku, maka perindahlah pula akhlakku, dan haramkanlah wajahku dari api neraka.",
+   source:"HR. Ahmad no. 3823 & Ibn Hibban no. 959",type:"hadis"},
+
+  {id:11,cat:"harian",title:"Doa Ketika Hujan",
+   arabic:"اللَّهُمَّ صَيِّباً نَافِعاً",
+   latin:"Allāhumma ṣayyiban nāfi'ā.",
+   id_text:"Ya Allah, jadikanlah hujan ini hujan yang bermanfaat.",
+   source:"HR. Bukhari no. 1032",type:"hadis"},
+
+  {id:12,cat:"harian",title:"Doa Setelah Hujan",
+   arabic:"مُطِرْنَا بِفَضْلِ اللَّهِ وَرَحْمَتِهِ",
+   latin:"Muṭirnā bifaḍlillāhi wa raḥmatih.",
+   id_text:"Kami dihujani dengan karunia Allah dan rahmat-Nya.",
+   source:"HR. Bukhari no. 846 & Muslim no. 71",type:"hadis"},
+
+  // ========== SHOLAT & IBADAH ==========
+  {id:13,cat:"sholat",title:"Doa Iftitah (Lengkap)",
+   arabic:"اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَايَ كَمَا بَاعَدْتَ بَيْنَ الْمَشْرِقِ وَالْمَغْرِبِ، اللَّهُمَّ نَقِّنِي مِنَ الْخَطَايَا كَمَا يُنَقَّى الثَّوْبُ الْأَبْيَضُ مِنَ الدَّنَسِ، اللَّهُمَّ اغْسِلْ خَطَايَايَ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ",
+   latin:"Allāhumma bā'id baynī wa bayna khaṭāyāya kamā bā'adta baynal-masyriqi wal-maghrib. Allāhumma naqqinī minal-khaṭāyā kamā yunaqqaṡ-ṡawbul-abyaḍu minad-danas. Allāhummaghsil khaṭāyāya bil-mā'i waṡ-ṡalji wal-barad.",
+   id_text:"Ya Allah, jauhkanlah antara aku dan kesalahan-kesalahanku sebagaimana Engkau menjauhkan antara timur dan barat. Ya Allah, bersihkanlah aku dari kesalahan-kesalahan sebagaimana baju putih dibersihkan dari kotoran. Ya Allah, cucilah kesalahan-kesalahanku dengan air, salju, dan es.",
+   source:"HR. Bukhari no. 744 & Muslim no. 598",type:"hadis"},
+
+  {id:14,cat:"sholat",title:"Doa Ruku' (Lengkap)",
+   arabic:"سُبْحَانَ رَبِّيَ الْعَظِيمِ وَبِحَمْدِهِ، سُبْحَانَكَ اللَّهُمَّ رَبَّنَا وَبِحَمْدِكَ، اللَّهُمَّ اغْفِرْ لِي",
+   latin:"Subḥāna rabbiyal-'aẓīmi wa biḥamdih. Subḥānakal-lāhumma rabbanā wa biḥamdika, Allāhummaghfir lī.",
+   id_text:"Mahasuci Tuhanku Yang Maha Agung dan segala puji bagi-Nya. Mahasuci Engkau ya Allah Tuhan kami dan dengan memuji-Mu. Ya Allah, ampunilah aku.",
+   source:"HR. Abu Dawud no. 869 & Bukhari no. 817",type:"hadis"},
+
+  {id:15,cat:"sholat",title:"Doa I'tidal (Setelah Ruku')",
+   arabic:"رَبَّنَا وَلَكَ الْحَمْدُ، حَمْداً كَثِيراً طَيِّباً مُبَارَكاً فِيهِ",
+   latin:"Rabbanā wa lakal-ḥamd, ḥamdan kaṡīran ṭayyiban mubārakan fīh.",
+   id_text:"Ya Tuhan kami, dan bagi-Mu lah segala puji, pujian yang banyak, baik, dan penuh berkah.",
+   source:"HR. Bukhari no. 799",type:"hadis"},
+
+  {id:16,cat:"sholat",title:"Doa Sujud (Lengkap)",
+   arabic:"سُبْحَانَ رَبِّيَ الْأَعْلَى وَبِحَمْدِهِ، سُبْحَانَكَ اللَّهُمَّ رَبَّنَا وَبِحَمْدِكَ، اللَّهُمَّ اغْفِرْ لِي",
+   latin:"Subḥāna rabbiyal-a'lā wa biḥamdih. Subḥānakal-lāhumma rabbanā wa biḥamdika, Allāhummaghfir lī.",
+   id_text:"Mahasuci Tuhanku Yang Maha Tinggi dan segala puji bagi-Nya. Mahasuci Engkau ya Allah Tuhan kami dan dengan memuji-Mu. Ya Allah, ampunilah aku.",
+   source:"HR. Abu Dawud no. 871 & Muslim no. 487",type:"hadis"},
+
+  {id:17,cat:"sholat",title:"Doa Duduk Antara Dua Sujud",
+   arabic:"رَبِّ اغْفِرْ لِي، وَارْحَمْنِي، وَاجْبُرْنِي، وَارْفَعْنِي، وَارْزُقْنِي، وَاهْدِنِي، وَعَافِنِي، وَاعْفُ عَنِّي",
+   latin:"Rabbighfir lī, warḥamnī, wajburnī, warfa'nī, warzuqnī, wahdinī, wa'āfinī, wa'fu 'annī.",
+   id_text:"Ya Tuhanku, ampunilah aku, rahmatilah aku, perbaikilah keadaanku, angkatlah derajatku, berilah aku rezeki, berilah aku petunjuk, berilah aku kesehatan, dan maafkanlah aku.",
+   source:"HR. Abu Dawud no. 850 & Tirmidzi no. 284",type:"hadis"},
+
+  {id:18,cat:"sholat",title:"Doa Tasyahhud Akhir",
+   arabic:"التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّداً عَبْدُهُ وَرَسُولُهُ",
+   latin:"At-taḥiyyātu lillāhi waṣ-ṣalawātu waṭ-ṭayyibāt. As-salāmu 'alaika ayyuhan-nabiyyu wa raḥmatullāhi wa barakātuh. As-salāmu 'alainā wa 'alā 'ibādillāhiṣ-ṣāliḥīn. Asyhadu an lā ilāha illallāhu wa asyhadu anna Muḥammadan 'abduhu wa rasūluh.",
+   id_text:"Segala penghormatan, shalawat, dan kebaikan hanyalah milik Allah. Semoga keselamatan terlimpah kepadamu wahai Nabi, beserta rahmat Allah dan berkah-Nya. Semoga keselamatan juga terlimpah kepada kami dan kepada hamba-hamba Allah yang shalih. Aku bersaksi bahwa tiada tuhan selain Allah, dan aku bersaksi bahwa Muhammad adalah hamba dan utusan-Nya.",
+   source:"HR. Bukhari no. 831 & Muslim no. 402",type:"hadis"},
+
+  {id:19,cat:"sholat",title:"Shalawat Ibrahimiyyah",
+   arabic:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ",
+   latin:"Allāhumma ṣalli 'alā Muḥammadin wa 'alā āli Muḥammadin kamā ṣallaita 'alā Ibrāhīma wa 'alā āli Ibrāhīm, innaka ḥamīdun majīd. Allāhumma bārik 'alā Muḥammadin wa 'alā āli Muḥammadin kamā bārakta 'alā Ibrāhīma wa 'alā āli Ibrāhīm, innaka ḥamīdun majīd.",
+   id_text:"Ya Allah, limpahkanlah shalawat kepada Muhammad dan kepada keluarga Muhammad, sebagaimana Engkau melimpahkan shalawat kepada Ibrahim dan kepada keluarga Ibrahim. Sesungguhnya Engkau Maha Terpuji dan Maha Mulia. Ya Allah, berkahilah Muhammad dan keluarga Muhammad, sebagaimana Engkau memberkahi Ibrahim dan keluarga Ibrahim. Sesungguhnya Engkau Maha Terpuji dan Maha Mulia.",
+   source:"HR. Bukhari no. 3370 & Muslim no. 406",type:"hadis"},
+
+  {id:20,cat:"sholat",title:"Doa Qunut Nazilah (Lengkap)",
+   arabic:"اللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ، وَعَافِنِي فِيمَنْ عَافَيْتَ، وَتَوَلَّنِي فِيمَنْ تَوَلَّيْتَ، وَبَارِكْ لِي فِيمَا أَعْطَيْتَ، وَقِنِي شَرَّ مَا قَضَيْتَ، فَإِنَّكَ تَقْضِي وَلَا يُقْضَى عَلَيْكَ، وَإِنَّهُ لَا يَذِلُّ مَنْ وَالَيْتَ، وَلَا يَعِزُّ مَنْ عَادَيْتَ، تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ",
+   latin:"Allāhummah-dinī fīman hadayt, wa 'āfinī fīman 'āfayt, wa tawallanī fīman tawallayt, wa bārik lī fīmā a'ṭayt, wa qinī syarra mā qaḍayt. Fa-innaka taqḍī wa lā yuqḍā 'alaik, wa innahū lā yadzillu man wālayt, wa lā ya'izzu man 'ādayt. Tabārakta rabbanā wa ta'ālayt.",
+   id_text:"Ya Allah, berilah aku petunjuk bersama orang yang Engkau beri petunjuk, dan berilah aku afiat bersama orang yang Engkau beri afiat, dan jadikanlah aku sebagai wali-Mu bersama orang yang Engkau jadikan wali, berkahilah aku dalam apa yang Engkau berikan, dan jagalah aku dari keburukan yang Engkau tetapkan. Sesungguhnya Engkau-lah yang menetapkan dan tidak ada yang dapat menetapkan atas-Mu. Sesungguhnya tidak akan hina orang yang Engkau jadikan wali, dan tidak akan mulia orang yang Engkau jadikan musuh. Maha Berkah Engkau wahai Tuhan kami dan Maha Tinggi.",
+   source:"HR. Abu Dawud no. 1425 & Tirmidzi no. 464",type:"hadis"},
+
+  {id:21,cat:"sholat",title:"Doa Setelah Sholat (Lengkap)",
+   arabic:"اللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ، وَلَا مُعْطِيَ لِمَا مَنَعْتَ، وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ",
+   latin:"Allāhumma antas-salāmu wa minkas-salām, tabārakta yā dzal-jalāli wal-ikrām. Lā ilāha illallāhu waḥdahū lā syarīka lah, lahul-mulku wa lahul-ḥamdu wa huwa 'alā kulli syai'in qadīr. Allāhumma lā māni'a limā a'ṭayt, wa lā mu'ṭiya limā mana't, wa lā yanfa'u dzal-jaddi minkal-jadd.",
+   id_text:"Ya Allah, Engkau As-Salam dan dari-Mu lah keselamatan, Maha Berkah Engkau wahai Dzat Yang Maha Agung dan Maha Mulia. Tidak ada tuhan selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Milik-Nya lah kerajaan dan bagi-Nya lah segala puji, dan Dia Mahakuasa atas segala sesuatu. Ya Allah, tidak ada yang bisa mencegah apa yang Engkau berikan, dan tidak ada yang bisa memberi apa yang Engkau cegah, dan tidak bermanfaat kekayaan seseorang (untuk menyelamatkan dirinya) dari-Mu.",
+   source:"HR. Muslim no. 591 & Bukhari no. 844",type:"hadis"},
+
+  {id:22,cat:"sholat",title:"Doa Masuk Masjid",
+   arabic:"أَعُوذُ بِاللَّهِ الْعَظِيمِ وَبِوَجْهِهِ الْكَرِيمِ وَسُلْطَانِهِ الْقَدِيمِ مِنَ الشَّيْطَانِ الرَّجِيمِ، بِسْمِ اللَّهِ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى رَسُولِ اللَّهِ، اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ",
+   latin:"A'ūdzu billāhil-'aẓīmi wa biwajhihil-karīmi wa sulṭānihil-qadīmi minasy-syaiṭānir-rajīm. Bismillāh, waṣ-ṣalātu was-salāmu 'alā rasūlillāh. Allāhummaf-taḥ lī abwāba raḥmatik.",
+   id_text:"Aku berlindung kepada Allah Yang Maha Agung, dengan wajah-Nya Yang Mulia dan kekuasaan-Nya yang abadi, dari setan yang terkutuk. Dengan nama Allah, shalawat dan salam kepada Rasulullah. Ya Allah, bukakanlah untukku pintu-pintu rahmat-Mu.",
+   source:"HR. Abu Dawud no. 466 & Muslim no. 713",type:"hadis"},
+
+  {id:23,cat:"sholat",title:"Doa Keluar Masjid",
+   arabic:"بِسْمِ اللَّهِ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى رَسُولِ اللَّهِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ، اللَّهُمَّ اعْصِمْنِي مِنَ الشَّيْطَانِ الرَّجِيمِ",
+   latin:"Bismillāh, waṣ-ṣalātu was-salāmu 'alā rasūlillāh. Allāhumma innī as'aluka min faḍlik. Allāhumma'ṣimnī minasy-syaiṭānir-rajīm.",
+   id_text:"Dengan nama Allah, shalawat dan salam kepada Rasulullah. Ya Allah, sesungguhnya aku memohon dari karunia-Mu. Ya Allah, jagalah aku dari setan yang terkutuk.",
+   source:"HR. Ibn Majah no. 773 & Abu Dawud no. 465",type:"hadis"},
+
+  // ========== PERLINDUNGAN & RUQYAH ==========
+  {id:24,cat:"perlindungan",title:"Ayat Kursi (Lengkap)",
+   arabic:"اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+   latin:"Allāhu lā ilāha illā huw, al-ḥayyul-qayyūm. Lā ta'khudhuhu sinatuw wa lā nawm. Lahū mā fis-samāwāti wa mā fil-arḍ. Man dzal-ladzī yasyfa'u 'indahū illā bi'idznih. Ya'lamu mā bayna aydīhim wa mā khalfahum. Wa lā yuḥīṭūna bisyai'im min 'ilmihī illā bimā syā'. Wasi'a kursiyyuhus-samāwāti wal-arḍ. Wa lā ya'ūduhū ḥifẓuhumā. Wa huwal-'aliyyul-'aẓīm.",
+   id_text:"Allah, tidak ada tuhan selain Dia, Yang Maha Hidup lagi terus-menerus mengurus (makhluk-Nya). Tidak mengantuk dan tidak tidur. Milik-Nya apa yang ada di langit dan apa yang ada di bumi. Tidak ada yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya. Dia mengetahui apa yang ada di hadapan mereka dan apa yang ada di belakang mereka. Mereka tidak mengetahui sesuatu pun dari ilmu-Nya, kecuali apa yang Dia kehendaki. Kursi-Nya meliputi langit dan bumi. Dan Dia tidak merasa berat memelihara keduanya. Dia-lah Yang Maha Tinggi, Maha Agung.",
+   source:"QS. Al-Baqarah: 255",type:"quran"},
+
+  {id:25,cat:"perlindungan",title:"Surah Al-Falaq (Lengkap)",
+   arabic:"قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِن شَرِّ مَا خَلَقَ ۝ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
+   latin:"Qul a'ūdzu bi rabbil-falaq. Min syarri mā khalaq. Wa min syarri ghāsiqin idzā waqab. Wa min syarrin-naffāṡāti fil-'uqad. Wa min syarri ḥāsidin idzā ḥasad.",
+   id_text:"Katakanlah: Aku berlindung kepada Tuhan yang menguasai subuh. Dari kejahatan (makhluk yang) Dia ciptakan. Dan dari kejahatan malam apabila telah gelap gulita. Dan dari kejahatan (perempuan-perempuan) penyihir yang meniup pada buhul-buhul (talinya). Dan dari kejahatan orang yang dengki apabila dia dengki.",
+   source:"QS. Al-Falaq: 1-5",type:"quran"},
+
+  {id:26,cat:"perlindungan",title:"Surah An-Naas (Lengkap)",
+   arabic:"قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ",
+   latin:"Qul a'ūdzu bi rabbin-nās. Malikin-nās. Ilāhin-nās. Min syarril-waswāsil-khannās. Al-ladzī yuwaswisu fī ṣudūrin-nās. Minal-jinnati wan-nās.",
+   id_text:"Katakanlah: Aku berlindung kepada Tuhan manusia. Raja manusia. Sembahan manusia. Dari kejahatan (bisikan) setan yang biasa bersembunyi. Yang membisikkan (kejahatan) ke dalam dada manusia. Dari (golongan) jin dan manusia.",
+   source:"QS. An-Naas: 1-6",type:"quran"},
+
+  {id:27,cat:"perlindungan",title:"Doa Perlindungan Pagi & Sore",
+   arabic:"بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+   latin:"Bismillāhil-ladzī lā yaḍurru ma'asmihi syai'un fil-arḍi wa lā fis-samā'i wa huwas-samī'ul-'alīm.",
+   id_text:"Dengan nama Allah yang tidak ada sesuatu pun di bumi dan di langit yang dapat membahayakan bersama nama-Nya, dan Dia Maha Mendengar lagi Maha Mengetahui. (Dibaca 3x pagi dan 3x sore hari).",
+   source:"HR. Abu Dawud no. 5088 & Tirmidzi no. 3388",type:"hadis"},
+
+  {id:28,cat:"perlindungan",title:"Doa Ruqyah (Dari Penyakit)",
+   arabic:"بِسْمِ اللَّهِ أَرْقِيكَ، مِنْ كُلِّ شَيْءٍ يُؤْذِيكَ، مِنْ شَرِّ كُلِّ نَفْسٍ أَوْ عَيْنِ حَاسِدٍ، اللَّهُ يَشْفِيكَ، بِسْمِ اللَّهِ أَرْقِيكَ",
+   latin:"Bismillāhi arqīka, min kulli syai'in yu'dzīka, min syarri kulli nafsin aw 'ayni ḥāsidin, Allāhu yasyfīka, bismillāhi arqīka.",
+   id_text:"Dengan nama Allah aku meruqyahmu, dari segala sesuatu yang menyakitimu, dari kejahatan setiap jiwa atau mata yang dengki. Semoga Allah menyembuhkanmu. Dengan nama Allah aku meruqyahmu.",
+   source:"HR. Muslim no. 2186",type:"hadis"},
+
+  {id:29,cat:"perlindungan",title:"Doa Pagi (Dzikir Pagi)",
+   arabic:"أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ",
+   latin:"Aṣbaḥnā wa aṣbaḥal-mulku lillāh, wal-ḥamdu lillāh, lā ilāha illallāhu waḥdahū lā syarīka lah, lahul-mulku wa lahul-ḥamdu wa huwa 'alā kulli syai'in qadīr. Rabbi as'aluka khayra mā fī hādzal-yawmi wa khayra mā ba'dah, wa a'ūdzu bika min syarri mā fī hādzal-yawmi wa syarri mā ba'dah.",
+   id_text:"Kami memasuki pagi hari dan seluruh kerajaan milik Allah, dan segala puji bagi Allah. Tidak ada tuhan selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Milik-Nya lah kerajaan dan bagi-Nya lah segala puji, Dia Mahakuasa atas segala sesuatu. Ya Tuhanku, aku memohon kepada-Mu kebaikan hari ini dan kebaikan sesudahnya, dan aku berlindung kepada-Mu dari keburukan hari ini dan keburukan sesudahnya.",
+   source:"HR. Muslim no. 2723",type:"hadis"},
+
+  {id:30,cat:"perlindungan",title:"Doa Sore (Dzikir Petang)",
+   arabic:"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا",
+   latin:"Amsaynā wa amsal-mulku lillāh, wal-ḥamdu lillāh, lā ilāha illallāhu waḥdahū lā syarīka lah, lahul-mulku wa lahul-ḥamdu wa huwa 'alā kulli syai'in qadīr. Rabbi as'aluka khayra mā fī hādzihil-laylati wa khayra mā ba'dahā, wa a'ūdzu bika min syarri mā fī hādzihil-laylati wa syarri mā ba'dahā.",
+   id_text:"Kami memasuki sore hari dan seluruh kerajaan milik Allah, segala puji bagi Allah. Tidak ada tuhan selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Milik-Nya lah kerajaan dan bagi-Nya lah segala puji, Dia Mahakuasa atas segala sesuatu. Ya Tuhanku, aku memohon kebaikan malam ini dan kebaikan sesudahnya, dan aku berlindung dari keburukan malam ini dan keburukan sesudahnya.",
+   source:"HR. Muslim no. 2723",type:"hadis"},
+
+  // ========== KELUARGA & REZEKI ==========
+  {id:31,cat:"keluarga",title:"Doa untuk Keluarga & Keturunan",
+   arabic:"رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا",
+   latin:"Rabbanā hab lanā min azwājinā wa dzurriyyātinā qurrata a'yunin waj'alnā lil-muttaqīna imāmā.",
+   id_text:"Ya Tuhan kami, anugerahkanlah kepada kami pasangan kami dan keturunan kami sebagai penyenang hati (kami), dan jadikanlah kami pemimpin bagi orang-orang yang bertakwa.",
+   source:"QS. Al-Furqan: 74",type:"quran"},
+
+  {id:32,cat:"keluarga",title:"Doa Kelancaran & Keberkahan Rezeki",
+   arabic:"اللَّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ، وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ",
+   latin:"Allāhummak-finī biḥalālika 'an ḥarāmika, wa aghnini bifaḍlika 'amman siwāk.",
+   id_text:"Ya Allah, cukupkanlah aku dengan rezeki halal-Mu sehingga aku tidak perlu yang haram, dan kayakanlah aku dengan karunia-Mu sehingga aku tidak perlu kepada selain-Mu.",
+   source:"HR. Tirmidzi no. 3563 & Ahmad no. 1319",type:"hadis"},
+
+  {id:33,cat:"keluarga",title:"Doa untuk Anak & Keturunan",
+   arabic:"رَبِّ اجْعَلْنِي مُقِيمَ الصَّلَاةِ وَمِنْ ذُرِّيَّتِي ۚ رَبَّنَا وَتَقَبَّلْ دُعَاءِ ۝ رَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ",
+   latin:"Rabbij-'alnī muqīmaṣ-ṣalāti wa min dzurriyyatī. Rabbanā wa taqabbal du'ā'. Rabbanagh-fir lī wa liwālidayya wa lil-mu'minīna yawma yaqūmul-ḥisāb.",
+   id_text:"Ya Tuhanku, jadikanlah aku dan anak cucuku orang-orang yang tetap mendirikan shalat. Ya Tuhan kami, perkenankanlah doaku. Ya Tuhan kami, ampunilah aku dan kedua orang tuaku serta orang-orang mukmin pada hari diadakannya perhitungan (hari kiamat).",
+   source:"QS. Ibrahim: 40-41",type:"quran"},
+
+  {id:34,cat:"keluarga",title:"Doa Pengantin Baru",
+   arabic:"بَارَكَ اللَّهُ لَكَ، وَبَارَكَ عَلَيْكَ، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ",
+   latin:"Bārakallāhu laka, wa bāraka 'alaika, wa jama'a bainakumā fī khair.",
+   id_text:"Semoga Allah memberkahimu (pengantin laki-laki), memberkahi atasmu, dan mengumpulkan kalian berdua dalam kebaikan.",
+   source:"HR. Abu Dawud no. 2130 & Tirmidzi no. 1091",type:"hadis"},
+
+  {id:35,cat:"keluarga",title:"Doa Suami Istri Sebelum Hubungan",
+   arabic:"بِسْمِ اللَّهِ، اللَّهُمَّ جَنِّبْنَا الشَّيْطَانَ، وَجَنِّبِ الشَّيْطَانَ مَا رَزَقْتَنَا",
+   latin:"Bismillāh. Allāhumma jannibnasy-syaiṭān, wa jannibisy-syaiṭāna mā razaqtanā.",
+   id_text:"Dengan nama Allah. Ya Allah, jauhkanlah kami dari setan, dan jauhkanlah setan dari apa yang Engkau rezekikan kepada kami (anak).",
+   source:"HR. Bukhari no. 6388 & Muslim no. 1434",type:"hadis"},
+
+  {id:36,cat:"keluarga",title:"Doa dari Kesedihan & Hutang (Lengkap)",
+   arabic:"اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ",
+   latin:"Allāhumma innī a'ūdzubika minal-hammi wal-ḥazan, wa a'ūdzubika minal-'ajzi wal-kasal, wa a'ūdzubika minal-jubni wal-bukhl, wa a'ūdzubika min ghalabatid-dayni wa qahrir-rijāl.",
+   id_text:"Ya Allah, aku berlindung kepada-Mu dari kesedihan dan kesusahan, aku berlindung kepada-Mu dari kelemahan dan kemalasan, aku berlindung kepada-Mu dari ketakutan dan kebakhilan, dan aku berlindung kepada-Mu dari lilitan utang dan penindasan orang.",
+   source:"HR. Bukhari no. 6369 & Abu Dawud no. 1555",type:"hadis"},
+
+  {id:37,cat:"keluarga",title:"Doa Memohon Kecukupan dari Allah",
+   arabic:"اللَّهُمَّ رَبَّ السَّمَاوَاتِ السَّبْعِ وَرَبَّ الْعَرْشِ الْعَظِيمِ، رَبَّنَا وَرَبَّ كُلِّ شَيْءٍ، فَالِقَ الْحَبِّ وَالنَّوَى، وَمُنَزِّلَ التَّوْرَاةِ وَالْإِنْجِيلِ وَالْفُرْقَانِ، أَعُوذُ بِكَ مِنْ شَرِّ كُلِّ شَيْءٍ أَنْتَ آخِذٌ بِنَاصِيَتِهِ، اللَّهُمَّ أَنْتَ الْأَوَّلُ فَلَيْسَ قَبْلَكَ شَيْءٌ، وَأَنْتَ الْآخِرُ فَلَيْسَ بَعْدَكَ شَيْءٌ، وَأَنْتَ الظَّاهِرُ فَلَيْسَ فَوْقَكَ شَيْءٌ، وَأَنْتَ الْبَاطِنُ فَلَيْسَ دُونَكَ شَيْءٌ، اقْضِ عَنَّا الدَّيْنَ وَأَغْنِنَا مِنَ الْفَقْرِ",
+   latin:"Allāhumma rabbas-samāwātis-sab'i wa rabbal-'arsyil-'aẓīm, rabbanā wa rabba kulli syai', fāliqal-ḥabbi wan-nawā, wa munazzilat-tawrāti wal-injīli wal-furqān, a'ūdzu bika min syarri kulli syai'in anta ākhidzun bināṣiyatih. Allāhumma antal-awwalu fa-laisa qablaka syai', wa antal-ākhiru fa-laisa ba'daka syai', wa antaẓ-ẓāhiru fa-laisa fawqaka syai', wa antal-bāṭinu fa-laisa dūnaka syai', iqḍi 'annad-dayna wa aghninā minal-faqr.",
+   id_text:"Ya Allah, Tuhan langit yang tujuh dan Tuhan Arsy yang agung, Tuhan kami dan Tuhan segala sesuatu, yang membelah biji-bijian dan benih, yang menurunkan Taurat, Injil, dan Al-Furqan, aku berlindung kepada-Mu dari kejahatan segala sesuatu yang Engkau pegang ubun-ubunnya. Ya Allah, Engkau Al-Awwal maka tidak ada sesuatu sebelum-Mu, Engkau Al-Akhir maka tidak ada sesuatu sesudah-Mu, Engkau Aẓ-Ẓahir maka tidak ada sesuatu di atas-Mu, Engkau Al-Batin maka tidak ada sesuatu di bawah-Mu. Lunaskanlah utang kami dan cukupkanlah kami dari kefakiran.",
+   source:"HR. Muslim no. 2713",type:"hadis"},
+];
+
+const catList=[
+  {id:"semua",label:"✦ Semua"},
+  {id:"harian",label:"☀ Harian"},
+  {id:"sholat",label:"🕌 Sholat"},
+  {id:"perlindungan",label:"🛡 Perlindungan"},
+  {id:"keluarga",label:"🌿 Keluarga"},
+];
+
+let activeCat="semua", bookmarks=[], showBm=false, expanded=null, darkMode=true;
+try{ bookmarks=JSON.parse(localStorage.getItem("zi_bm")||"[]"); }catch{}
+
+// Init tabs
+const tabsEl=document.getElementById("tabs");
+catList.forEach(c=>{
+  const b=document.createElement("button");
+  b.className="tab"+(c.id===activeCat?" active":"");
+  b.textContent=c.label; b.id="tab-"+c.id;
+  b.onclick=()=>{
+    if(showBm){showBm=false;updateBmBtn();}
+    activeCat=c.id;
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    renderCards();
+  };
+  tabsEl.appendChild(b);
+});
+
+function saveBm(){localStorage.setItem("zi_bm",JSON.stringify(bookmarks));document.getElementById("bmCount").textContent=bookmarks.length;}
+function toggleBm(id){bookmarks.includes(id)?bookmarks=bookmarks.filter(x=>x!==id):bookmarks.push(id);saveBm();renderCards();}
+function updateBmBtn(){const b=document.getElementById("bmToggle");b.classList.toggle("active",showBm);b.innerHTML=(showBm?"★":"☆")+' <span id="bmCount">'+bookmarks.length+'</span>';}
+function toggleBmView(){showBm=!showBm;updateBmBtn();if(showBm){activeCat="semua";document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.getElementById("tab-semua").classList.add("active");}renderCards();}
+
+function toggleDark(){
+  darkMode=!darkMode;
+  const r=document.documentElement.style;
+  if(!darkMode){
+    r.setProperty("--bg","#f5f0e8");r.setProperty("--bg2","#ede7d5");r.setProperty("--bg3","#e0d8c5");
+    r.setProperty("--text","#2a2010");r.setProperty("--text-d","#6a5a3a");
+    r.setProperty("--border","rgba(100,70,20,0.2)");r.setProperty("--border-b","rgba(100,70,20,0.4)");
+    r.setProperty("--cream","#2a1a08");r.setProperty("--gold","#8a5e10");r.setProperty("--gold-l","#6a4408");r.setProperty("--gold-d","#a07828");
+    document.getElementById("darkBtn").textContent="🌙";
+  }else{
+    r.setProperty("--bg","#0a0a0a");r.setProperty("--bg2","#111");r.setProperty("--bg3","#1a1a1a");
+    r.setProperty("--text","#e8dcc0");r.setProperty("--text-d","#9a8a6a");
+    r.setProperty("--border","rgba(201,168,76,0.2)");r.setProperty("--border-b","rgba(201,168,76,0.5)");
+    r.setProperty("--cream","#f5e9c8");r.setProperty("--gold","#c9a84c");r.setProperty("--gold-l","#e8c97a");r.setProperty("--gold-d","#8a6c2a");
+    document.getElementById("darkBtn").textContent="☀";
+  }
+}
+
+function autoResize(el){el.style.height="auto";el.style.height=Math.min(el.scrollHeight,120)+"px";}
+function handleKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();searchAI();}}
+
+// ===== AI SEARCH =====
+async function searchAI(){
+  const q=document.getElementById("aiInput").value.trim();
+  if(!q)return;
+  const btn=document.getElementById("aiBtn");
+  btn.disabled=true;
+  const res=document.getElementById("aiResult");
+
+  res.innerHTML=`
+    <div class="ai-result fade-in">
+      <div class="ai-result-card">
+        <div class="ai-result-header"><span class="ai-result-icon">✨</span><span class="ai-result-label">Mencari: "${q}"</span></div>
+        <div class="ai-result-body"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+      </div>
+    </div>`;
+
+  const systemPrompt=`Kamu adalah ustadz digital yang ahli dalam Al-Qur'an dan Hadis. 
+Ketika user mencari doa, bacaan, atau shalawat, berikan jawaban LENGKAP dalam format JSON berikut (array, bisa 1-5 item tergantung permintaan):
+
+[
+  {
+    "title": "Nama doa/bacaan",
+    "arabic": "Teks Arab lengkap",
+    "latin": "Transliterasi latin dengan tanda baca panjang pendek",
+    "indonesia": "Terjemahan bahasa Indonesia yang fasih",
+    "source": "Sumber (contoh: QS. Al-Baqarah: 255 atau HR. Bukhari no. 6312)",
+    "type": "quran atau hadis",
+    "keterangan": "Penjelasan singkat kapan/bagaimana doa ini dibaca (1-2 kalimat)"
+  }
+]
+
+Penting:
+- Hanya JSON, tidak ada teks lain di luar JSON
+- Teks Arab harus benar dan lengkap
+- Latin menggunakan transliterasi akademik (ā, ī, ū, ḥ, dll)
+- Jika tidak ditemukan, kembalikan array kosong []
+- Maksimal 5 doa per pencarian`;
+
+  try{
+    const response=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:2000,
+        system:systemPrompt,
+        messages:[{role:"user",content:q}]
+      })
+    });
+    const data=await response.json();
+    const raw=data.content?.map(x=>x.text||"").join("");
+    
+    let items=[];
+    try{
+      const clean=raw.replace(/```json|```/g,"").trim();
+      items=JSON.parse(clean);
+    }catch{items=[];}
+
+    if(!items||items.length===0){
+      res.innerHTML=`
+        <div class="ai-result fade-in">
+          <div class="ai-result-card">
+            <div class="ai-result-header"><span class="ai-result-icon">🔍</span><span class="ai-result-label">Hasil Pencarian AI</span></div>
+            <div class="ai-result-body"><div class="ai-error">Doa tidak ditemukan. Coba kata kunci yang berbeda.</div></div>
+          </div>
+        </div>`;
+    } else {
+      let bodyHtml=items.map((d,i)=>`
+        <div class="ai-multi-item">
+          <div class="doa-title-ai">${i+1}. ${d.title||""}</div>
+          <div class="doa-arabic">${d.arabic||""}</div>
+          <div class="doa-latin">${d.latin||""}</div>
+          <div class="sep"></div>
+          <div class="doa-id">"${d.indonesia||""}"</div>
+          ${d.keterangan?`<div style="font-size:12px;color:var(--text-d);margin-bottom:10px;font-style:italic;">📌 ${d.keterangan}</div>`:""}
+          <span class="doa-source ${d.type==="quran"?"src-quran":"src-hadis"}">${d.type==="quran"?"📖":"📜"} ${d.source||""}</span>
+        </div>`).join("");
+
+      res.innerHTML=`
+        <div class="ai-result fade-in">
+          <div class="ai-result-card">
+            <div class="ai-result-header"><span class="ai-result-icon">✨</span><span class="ai-result-label">Ditemukan ${items.length} hasil untuk "${q}"</span></div>
+            <div class="ai-result-body">${bodyHtml}</div>
+          </div>
+        </div>`;
+    }
+    document.getElementById("aiInput").value="";
+    document.getElementById("aiInput").style.height="auto";
+  }catch(e){
+    res.innerHTML=`
+      <div class="ai-result fade-in">
+        <div class="ai-result-card">
+          <div class="ai-result-header"><span class="ai-result-icon">⚠</span><span class="ai-result-label">Terjadi Kesalahan</span></div>
+          <div class="ai-result-body"><div class="ai-error">Gagal terhubung ke AI. Periksa koneksi internet kamu.</div></div>
+        </div>
+      </div>`;
+  }
+  btn.disabled=false;
+}
+
+// ===== LOCAL CARDS =====
+function renderCards(){
+  const q=document.getElementById("localSearch").value.trim().toLowerCase();
+  let list=duas;
+  if(showBm)list=list.filter(d=>bookmarks.includes(d.id));
+  if(activeCat!=="semua")list=list.filter(d=>d.cat===activeCat);
+  if(q)list=list.filter(d=>d.title.toLowerCase().includes(q)||d.id_text.toLowerCase().includes(q)||d.latin.toLowerCase().includes(q));
+
+  const el=document.getElementById("content");
+  if(!list.length){
+    el.innerHTML=`<div class="section-lbl">${showBm?"★ Favorit (0)":"Koleksi Doa"}</div><div class="empty"><div class="empty-icon">🤲</div><div style="font-size:14px;font-style:italic;">${showBm?"Belum ada favorit":"Tidak ditemukan"}</div></div>`;
+    return;
+  }
+
+  let html=`<div class="section-lbl">${showBm?"★ Favorit ("+list.length+")":"Koleksi Doa ("+list.length+")"}</div>`;
+  list.forEach((d,i)=>{
+    const isExp=expanded===d.id, isBm=bookmarks.includes(d.id);
+    const words=d.arabic.split(" ");
+    const prev=words.slice(0,6).join(" ")+(words.length>6?"…":"");
+    html+=`
+    <div class="card" style="animation-delay:${i*.03}s">
+      <div class="card-hdr" onclick="toggleCard(${d.id})">
+        <div class="card-left">
+          <div class="card-title">${d.title}</div>
+          <div class="arabic-prev">${isExp?d.arabic:prev}</div>
+        </div>
+        <div class="card-right">
+          <button class="bm-btn${isBm?" saved":""}" onclick="event.stopPropagation();toggleBm(${d.id})">${isBm?"★":"☆"}</button>
+          <span class="arrow${isExp?" open":""}">▾</span>
+        </div>
+      </div>
+      <div class="card-body${isExp?" open":""}">
+        <div class="gold-line"></div>
+        <div class="doa-arabic">${d.arabic}</div>
+        <div class="doa-latin">${d.latin}</div>
+        <div class="sep"></div>
+        <div class="doa-id">"${d.id_text}"</div>
+        <span class="doa-source ${d.type==="quran"?"src-quran":"src-hadis"}">${d.type==="quran"?"📖":"📜"} ${d.source}</span>
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html;
+  document.getElementById("bmCount").textContent=bookmarks.length;
+}
+
+function toggleCard(id){expanded=expanded===id?null:id;renderCards();}
+
+// Init
+saveBm();
+renderCards();
+</script>
+</body>
+</html>
